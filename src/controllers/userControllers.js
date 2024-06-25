@@ -33,10 +33,23 @@ const user = {
       res.status(500).json({ message: error.message });
     }
   },
-  delete: async (req, res) => {
+
+  deleteByID: async (req, res) => {
     const { id_aluno } = req.body;
     try {
-      const response = await pool.query(`delete from alunos where id_aluno = '${id_aluno}' `);
+      const response = await pool.query(`delete from alunos where id_aluno = $1'`, [id_aluno]);
+      if (response.rowCount === 0) {
+        return res.status(404).json({ message: 'Registro não encontrado' });
+      }
+      return res.status(204).json({ message: 'Registro deletado com sucesso' });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  deleteEmail: async (req, res) => {
+    const { email } = req.body;
+    try {
+      const response = await pool.query(`DELETE FROM alunos WHERE email = $1`, [email]);
       if (response.rowCount === 0) {
         return res.status(404).json({ message: 'Registro não encontrado' });
       }
